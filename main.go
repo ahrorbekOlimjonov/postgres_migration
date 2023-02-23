@@ -310,7 +310,8 @@ func getAllData(db *sql.DB) {
 func catch_err(stores []Store) {}
 
 func main() {
-
+/*
+	
 	db := connect()
 	defer db.Close()
 
@@ -385,80 +386,81 @@ func main() {
 	}
 	catch_err(stores)
 
-	//reloadDatabase(db)
-	//insertStore(db, stores)
-	//insertBranch(db, stores)
-	//insertVacancy(db, stores)
-	//insertBranchesVacancies(db, stores)
-	//updateDta(db)
-	//deleteData(db)
-	//getStoreData(db)
-	//getBranchData(db)
-	//getVacancyData(db)
-	//getAllData(db)
+	reloadDatabase(db)
+	insertStore(db, stores)
+	insertBranch(db, stores)
+	insertVacancy(db, stores)
+	insertBranchesVacancies(db, stores)
+	updateDta(db)
+	deleteData(db)
+	getStoreData(db)
+	getBranchData(db)
+	getVacancyData(db)
+	getAllData(db)
 
-	//resp := Respons{}
-	//
-	//sRows, err := db.Query("select id, name from stores")
-	//if err != nil {
-	//	return
-	//}
-	//for sRows.Next() {
-	//
-	//	store := Store{}
-	//	err := sRows.Scan(
-	//		&store.ID,
-	//		&store.Name,
-	//	)
-	//	if err != nil {
-	//		return
-	//	}
-	//
-	//	bRows, err := db.Query("SELECT id, name, phonenumber from branches where store_id = $1", store.ID)
-	//	if err != nil {
-	//		return
-	//	}
-	//	for bRows.Next() {
-	//		branch := Branch{}
-	//		err := bRows.Scan(
-	//			&branch.ID,
-	//			&branch.Name,
-	//			pq.Array(&branch.PhoneNumber),
-	//		)
-	//		if err != nil {
-	//			return
-	//		}
-	//
-	//		vRows, err := db.Query("SELECT v.id, v.position, v,salary "+
-	//			"FROM vacancies v "+
-	//			"JOIN branches_vacancies bv "+
-	//			"ON v.id = bv.vacancy_id "+
-	//			"JOIN branches b "+
-	//			"ON b.id = bv.branch_id"+
-	//			"WHERE b.id = $1", branch.ID)
-	//
-	//		for vRows.Next() {
-	//			vacancy := Vacancy{}
-	//			err := vRows.Scan(
-	//				&vacancy.ID,
-	//				&vacancy.Position,
-	//				&vacancy.Salary,
-	//			)
-	//			if err != nil {
-	//				return
-	//			}
-	//
-	//			branch.Vacancies = append(branch.Vacancies, &vacancy)
-	//		}
-	//		store.Branches = append(store.Branches, &branch)
-	//	}
-	//	resp.Stores = append(resp.Stores, &store)
-	//}
-	//
-	//for _, store := range resp.Stores {
-	//	fmt.Println(store)
-	//}
+	resp := Respons{}
+	
+	sRows, err := db.Query("select id, name from stores")
+	if err != nil {
+		return
+	}
+	for sRows.Next() {
+	
+		store := Store{}
+		err := sRows.Scan(
+			&store.ID,
+			&store.Name,
+		)
+		if err != nil {
+			return
+		}
+	
+		bRows, err := db.Query("SELECT id, name, phonenumber from branches where store_id = $1", store.ID)
+		if err != nil {
+			return
+		}
+		for bRows.Next() {
+			branch := Branch{}
+			err := bRows.Scan(
+				&branch.ID,
+				&branch.Name,
+				pq.Array(&branch.PhoneNumber),
+			)
+			if err != nil {
+				return
+			}
+	
+			vRows, err := db.Query("SELECT v.id, v.position, v,salary "+
+				"FROM vacancies v "+
+				"JOIN branches_vacancies bv "+
+				"ON v.id = bv.vacancy_id "+
+				"JOIN branches b "+
+				"ON b.id = bv.branch_id"+
+				"WHERE b.id = $1", branch.ID)
+	
+			for vRows.Next() {
+				vacancy := Vacancy{}
+				err := vRows.Scan(
+					&vacancy.ID,
+					&vacancy.Position,
+					&vacancy.Salary,
+				)
+				if err != nil {
+					return
+				}
+	
+				branch.Vacancies = append(branch.Vacancies, &vacancy)
+			}
+			store.Branches = append(store.Branches, &branch)
+		}
+		resp.Stores = append(resp.Stores, &store)
+	}
+	
+	for _, store := range resp.Stores {
+		fmt.Println(store)
+	}
 
+	
 	resp := Respons{}
 
 	storeRows, err := db.Query("SELECT id, name FROM stores")
@@ -538,5 +540,9 @@ func main() {
 
 		}
 	}
+	*/
 
+
+
+	
 }
