@@ -30,11 +30,257 @@ type Vacancy struct {
 	BranchId int
 }
 
+
+func main() {
+
+	
+	db := connect()
+	defer db.Close()
+	tx, err := db.Begin()
+	if err != nil {
+		fmt.Println(err)
+	}
+	stores := []Store{
+		{
+			Name: "Karzinka",
+			Branches: []*Branch{
+				{
+					Name:        "Kohinur",
+					PhoneNumber: []string{"998931234567", "998931234567"},
+					Vacancies: []*Vacancy{
+						{
+							Position: "Driver",
+							Salary:   300,
+						},
+						{
+							Position: "Saler",
+							Salary:   400,
+						},
+					},
+				},
+				{
+					Name:        "Beruniy",
+					PhoneNumber: []string{"998931234567", "998931234567"},
+					Vacancies: []*Vacancy{
+						{
+							Position: "Guard",
+							Salary:   250,
+						},
+						{
+							Position: "Saler",
+							Salary:   350,
+						},
+					},
+				},
+			},
+		},
+		{
+			Name: "Makro",
+			Branches: []*Branch{
+				{
+					Name:        "Olmazor",
+					PhoneNumber: []string{"998931234567", "998931234567"},
+					Vacancies: []*Vacancy{
+						{
+							Position: "Quality_checker",
+							Salary:   399,
+						},
+						{
+							Position: "Driver",
+							Salary:   270,
+						},
+					},
+				},
+				{
+					Name:        "Chorsu",
+					PhoneNumber: []string{"998931234567", "998931234567"},
+					Vacancies: []*Vacancy{
+						{
+							Position: "Cleaner",
+							Salary:   330,
+						},
+						{
+							ID:       8,
+							Position: "manager",
+							Salary:   500,
+						},
+					},
+				},
+			},
+		},
+	}
+	catch_err(stores)
+
+	// reloadDatabase(db)
+	insertStore(tx, stores)
+	insertBranch(tx, stores)
+	insertVacancy(tx, stores)
+	insertBranchesVacancies(tx, stores)
+	// updateDta(db)
+	// deleteData(db)
+	// getStoreData(db)
+	// getVacancyData(db)
+	// getAllData(db)
+
+	err = tx.Commit()
+	
+	if err != nil{
+		fmt.Println(err)
+		tx.Rollback()
+	}
+/*
+	resp := Respons{}
+	
+	sRows, err := db.Query("select id, name from stores")
+	if err != nil {
+		return
+	}
+	for sRows.Next() {
+	
+		store := Store{}
+		err := sRows.Scan(
+			&store.ID,
+			&store.Name,
+		)
+		if err != nil {
+			return
+		}
+	
+		bRows, err := db.Query("SELECT id, name, phonenumber from branches where store_id = $1", store.ID)
+		if err != nil {
+			return
+		}
+		for bRows.Next() {
+			branch := Branch{}
+			err := bRows.Scan(
+				&branch.ID,
+				&branch.Name,
+				pq.Array(&branch.PhoneNumber),
+			)
+			if err != nil {
+				return
+			}
+	
+			vRows, err := db.Query("SELECT v.id, v.position, v,salary "+
+				"FROM vacancies v "+
+				"JOIN branches_vacancies bv "+
+				"ON v.id = bv.vacancy_id "+
+				"JOIN branches b "+
+				"ON b.id = bv.branch_id"+
+				"WHERE b.id = $1", branch.ID)
+	
+			for vRows.Next() {
+				vacancy := Vacancy{}
+				err := vRows.Scan(
+					&vacancy.ID,
+					&vacancy.Position,
+					&vacancy.Salary,
+				)
+				if err != nil {
+					return
+				}
+	
+				branch.Vacancies = append(branch.Vacancies, &vacancy)
+			}
+			store.Branches = append(store.Branches, &branch)
+		}
+		resp.Stores = append(resp.Stores, &store)
+	}
+	
+	for _, store := range resp.Stores {
+		fmt.Println(store)
+	}
+
+	
+
+	storeRows, err := db.Query("SELECT id, name FROM stores")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for storeRows.Next() {
+		store := Store{}
+		err := storeRows.Scan(
+			&store.ID,
+			&store.Name,
+		)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		branchRows, err := db.Query("SELECT id, name, phonenumber from branches WHERE store_id = $1", store.ID)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		for branchRows.Next() {
+			branch := Branch{}
+			err := branchRows.Scan(
+				&branch.ID,
+				&branch.Name,
+				pq.Array(&branch.PhoneNumber),
+			)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			vacancyRows, err := db.Query("SELECT v.id, v.position, v.salary FROM vacancies v JOIN branches_vacancies br ON v.id = br.vacancy_id JOIN branches b ON b.id = br.branch_id where b.id = $1", branch.ID)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			for vacancyRows.Next() {
+				vacancy := Vacancy{}
+				err := vacancyRows.Scan(
+					&vacancy.ID,
+					&vacancy.Position,
+					&vacancy.Salary,
+				)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+
+				branch.Vacancies = append(branch.Vacancies, &vacancy)
+			}
+
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			store.Branches = append(store.Branches, &branch)
+		}
+		resp.Stores = append(resp.Stores, &store)
+	}
+
+	for _, store := range resp.Stores {
+		fmt.Println(store)
+
+		for _, branch := range store.Branches {
+			fmt.Println(branch)
+			for _, v := range branch.Vacancies {
+				fmt.Println(v)
+
+			}
+
+		}
+	}
+	*/
+	
+	
+}
+
+
 func connect() *sql.DB {
 
 	connect := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
-		"localhost", 5432, "ahrorbek", "3108", "market")
+		"localhost", 5432, "ahrorbek", "3108", "migrations")
 
 	db, err := sql.Open("postgres", connect)
 
@@ -45,19 +291,20 @@ func connect() *sql.DB {
 
 }
 
-func insertStore(db *sql.DB, stores []Store) {
+func insertStore(db *sql.Tx, stores []Store) {
 
 	for _, s := range stores {
 
 		_, err := db.Exec("INSERT INTO stores(name) VALUES($1)", s.Name)
 		if err != nil {
+			db.Rollback()
 			panic(err)
 		}
 
 	}
 }
 
-func insertBranch(db *sql.DB, stores []Store) {
+func insertBranch(db *sql.Tx, stores []Store) {
 
 	for _, s := range stores {
 		var store_id int
@@ -65,6 +312,7 @@ func insertBranch(db *sql.DB, stores []Store) {
 		err := db.QueryRow("Select id from stores where name = $1", s.Name).Scan(&store_id)
 
 		if err != nil {
+			
 			panic(err)
 		}
 
@@ -74,6 +322,7 @@ func insertBranch(db *sql.DB, stores []Store) {
 				"($1, $2, $3)", b.Name, pq.Array(b.PhoneNumber), store_id)
 
 			if err != nil {
+				db.Rollback()
 				panic(err)
 			}
 		}
@@ -81,7 +330,7 @@ func insertBranch(db *sql.DB, stores []Store) {
 
 }
 
-func insertVacancy(db *sql.DB, stores []Store) {
+func insertVacancy(db *sql.Tx, stores []Store) {
 
 	for _, s := range stores {
 		for _, b := range s.Branches {
@@ -90,7 +339,8 @@ func insertVacancy(db *sql.DB, stores []Store) {
 				_, err := db.Exec("INSERT INTO vacancies(position, salary) VALUES($1, $2)", v.Position, v.Salary)
 
 				if err != nil {
-					return
+					db.Rollback()
+					fmt.Println(err)
 				}
 
 			}
@@ -98,7 +348,7 @@ func insertVacancy(db *sql.DB, stores []Store) {
 	}
 }
 
-func insertBranchesVacancies(db *sql.DB, stores []Store) {
+func insertBranchesVacancies(db *sql.Tx, stores []Store) {
 	for _, s := range stores {
 
 		for _, b := range s.Branches {
@@ -126,7 +376,8 @@ func insertBranchesVacancies(db *sql.DB, stores []Store) {
 				fmt.Println("Run")
 
 				if err != nil {
-					panic(err)
+					db.Rollback()
+					fmt.Println(err)
 				}
 
 			}
@@ -308,241 +559,3 @@ func getAllData(db *sql.DB) {
 }
 
 func catch_err(stores []Store) {}
-
-func main() {
-/*
-	
-	db := connect()
-	defer db.Close()
-
-	stores := []Store{
-		{
-			Name: "Karzinka",
-			Branches: []*Branch{
-				{
-					Name:        "Kohinur",
-					PhoneNumber: []string{"998931234567", "998931234567"},
-					Vacancies: []*Vacancy{
-						{
-							Position: "Driver",
-							Salary:   300,
-						},
-						{
-							Position: "Saler",
-							Salary:   400,
-						},
-					},
-				},
-				{
-					Name:        "Beruniy",
-					PhoneNumber: []string{"998931234567", "998931234567"},
-					Vacancies: []*Vacancy{
-						{
-							Position: "Guard",
-							Salary:   250,
-						},
-						{
-							Position: "Saler",
-							Salary:   350,
-						},
-					},
-				},
-			},
-		},
-		{
-			Name: "Makro",
-			Branches: []*Branch{
-				{
-					Name:        "Olmazor",
-					PhoneNumber: []string{"998931234567", "998931234567"},
-					Vacancies: []*Vacancy{
-						{
-							Position: "Quality_checker",
-							Salary:   399,
-						},
-						{
-							Position: "Driver",
-							Salary:   270,
-						},
-					},
-				},
-				{
-					Name:        "Chorsu",
-					PhoneNumber: []string{"998931234567", "998931234567"},
-					Vacancies: []*Vacancy{
-						{
-							Position: "Cleaner",
-							Salary:   330,
-						},
-						{
-							ID:       8,
-							Position: "manager",
-							Salary:   500,
-						},
-					},
-				},
-			},
-		},
-	}
-	catch_err(stores)
-
-	reloadDatabase(db)
-	insertStore(db, stores)
-	insertBranch(db, stores)
-	insertVacancy(db, stores)
-	insertBranchesVacancies(db, stores)
-	updateDta(db)
-	deleteData(db)
-	getStoreData(db)
-	getBranchData(db)
-	getVacancyData(db)
-	getAllData(db)
-
-	resp := Respons{}
-	
-	sRows, err := db.Query("select id, name from stores")
-	if err != nil {
-		return
-	}
-	for sRows.Next() {
-	
-		store := Store{}
-		err := sRows.Scan(
-			&store.ID,
-			&store.Name,
-		)
-		if err != nil {
-			return
-		}
-	
-		bRows, err := db.Query("SELECT id, name, phonenumber from branches where store_id = $1", store.ID)
-		if err != nil {
-			return
-		}
-		for bRows.Next() {
-			branch := Branch{}
-			err := bRows.Scan(
-				&branch.ID,
-				&branch.Name,
-				pq.Array(&branch.PhoneNumber),
-			)
-			if err != nil {
-				return
-			}
-	
-			vRows, err := db.Query("SELECT v.id, v.position, v,salary "+
-				"FROM vacancies v "+
-				"JOIN branches_vacancies bv "+
-				"ON v.id = bv.vacancy_id "+
-				"JOIN branches b "+
-				"ON b.id = bv.branch_id"+
-				"WHERE b.id = $1", branch.ID)
-	
-			for vRows.Next() {
-				vacancy := Vacancy{}
-				err := vRows.Scan(
-					&vacancy.ID,
-					&vacancy.Position,
-					&vacancy.Salary,
-				)
-				if err != nil {
-					return
-				}
-	
-				branch.Vacancies = append(branch.Vacancies, &vacancy)
-			}
-			store.Branches = append(store.Branches, &branch)
-		}
-		resp.Stores = append(resp.Stores, &store)
-	}
-	
-	for _, store := range resp.Stores {
-		fmt.Println(store)
-	}
-
-	
-	resp := Respons{}
-
-	storeRows, err := db.Query("SELECT id, name FROM stores")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	for storeRows.Next() {
-		store := Store{}
-		err := storeRows.Scan(
-			&store.ID,
-			&store.Name,
-		)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		branchRows, err := db.Query("SELECT id, name, phonenumber from branches WHERE store_id = $1", store.ID)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		for branchRows.Next() {
-			branch := Branch{}
-			err := branchRows.Scan(
-				&branch.ID,
-				&branch.Name,
-				pq.Array(&branch.PhoneNumber),
-			)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-
-			vacancyRows, err := db.Query("SELECT v.id, v.position, v.salary FROM vacancies v JOIN branches_vacancies br ON v.id = br.vacancy_id JOIN branches b ON b.id = br.branch_id where b.id = $1", branch.ID)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-
-			for vacancyRows.Next() {
-				vacancy := Vacancy{}
-				err := vacancyRows.Scan(
-					&vacancy.ID,
-					&vacancy.Position,
-					&vacancy.Salary,
-				)
-				if err != nil {
-					fmt.Println(err)
-					return
-				}
-
-				branch.Vacancies = append(branch.Vacancies, &vacancy)
-			}
-
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-
-			store.Branches = append(store.Branches, &branch)
-		}
-		resp.Stores = append(resp.Stores, &store)
-	}
-
-	for _, store := range resp.Stores {
-		fmt.Println(store)
-
-		for _, branch := range store.Branches {
-			fmt.Println(branch)
-			for _, v := range branch.Vacancies {
-				fmt.Println(v)
-
-			}
-
-		}
-	}
-	*/
-
-
-
-	
-}
